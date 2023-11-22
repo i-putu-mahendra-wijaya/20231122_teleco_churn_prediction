@@ -1,0 +1,15 @@
+credentials/
+
+venv_*/
+
+*.egg-info/
+
+**/__pycache__/
+
+.idea/
+
+nohup/*
+!nohup/what_this.txt
+
+logging/*
+!logging/what_this.txt

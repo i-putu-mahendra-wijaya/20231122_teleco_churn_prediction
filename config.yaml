@@ -1,0 +1,5 @@
+---
+PROJECT_ROOT_DIR: "/Users/iputumahendrawijaya/PycharmProjects/personal_20231122_telco_churn_prediction"
+JOB_LOCATION : "" # Jakarta area
+PROJECT_ID_DEV: "" # GCP Project ID - Development
+PROJECT_ID_PROD: "" # GCP Project ID - Production

@@ -1,0 +1,10 @@
+# Changes here will be overwritten by Copier
+_src_path: ../agriaku_20231020_ds_project_template_gen02_copier/copier_template
+author_email: i.putu.mahendra@gmail.com
+first_name: putu
+last_name: mahendra
+project_name: telco_churn_prediction
+project_short_description: This project aims to preduct churn in a teleco company
+    using dataset from Kaggle
+project_version: 0.0.1
+ticket_url: NA

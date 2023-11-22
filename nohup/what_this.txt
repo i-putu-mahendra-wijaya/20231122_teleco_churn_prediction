@@ -1,0 +1,1 @@
+save log output when using nohup
