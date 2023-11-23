@@ -4,11 +4,17 @@ The data for the model is obtained from [Kaggle](https://urldefense.com/v3/__htt
 
 ## Data Preparation & Cleaning
 
-## Feature Engineering
+Exploring, treating, and cleaning raw data can be found in the `notebooks` folder
+
+```
+notebooks/exploration/part00_data_exploration.ipynb 
+```
 
 ## Dataset Splitting
 
-## Algorith / implementation section
+## Feature Engineering
+
+## Algorithm / implementation section
 
 ## Model Training
 
@@ -18,4 +24,12 @@ The data for the model is obtained from [Kaggle](https://urldefense.com/v3/__htt
 
 ## Model Fairness / Bias
 
-## Business / commercial Need for Alignment with Analytics Team Prior to Retention Marketing Campaign
+## Pushing Models to Production
+
+### Key Stages & Processes
+
+### What Tools to Leverage
+
+### What to Monitor Whilst In Production
+
+## Business / Commercial Need for Alignment with Analytics Team Prior to Retention Marketing Campaign

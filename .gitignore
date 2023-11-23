@@ -8,6 +8,8 @@ venv_*/
 
 .idea/
 
+.DS_Store
+
 nohup/*
 !nohup/what_this.txt
 
