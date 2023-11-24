@@ -12,11 +12,23 @@ notebooks/exploration/part00_data_exploration.ipynb
 
 ## Dataset Splitting
 
+Splitting dataset, and calculating mean from `training` dataset to impute `null` values can 
+be found in `notebook` folder
+
+```
+notebooks/exploration/part01_data_splitting.ipynb
+```
+
 ## Feature Engineering
 
-## Algorithm / implementation section
+Converting one-hot encoded features into its PCA can be found in `notebook` folder 
 
-## Model Training
+```
+notebooks/exploration/part02_feature_engineering.ipynb
+```
+
+## Algorithm / implementation section & Model Training
+
 
 ## Hyperparameter Tuning
 
