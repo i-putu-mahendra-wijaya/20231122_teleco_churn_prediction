@@ -27,12 +27,10 @@ Converting one-hot encoded features into its PCA can be found in `notebook` fold
 notebooks/exploration/part02_feature_engineering.ipynb
 ```
 
-## Algorithm / implementation section & Model Training
+## Algorithm / implementation section, Model Training, and Performance Measurement
 
 
 ## Hyperparameter Tuning
-
-## Performance Measurement
 
 ## Model Fairness / Bias
 

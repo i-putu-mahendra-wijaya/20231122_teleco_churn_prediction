@@ -185,7 +185,7 @@ def impute_scale_and_convert_to_numpy(
 
     # Impute null values
     for each_cols, im_val in zip(columns_with_nulls, impute_val):
-        ohe_df[[each_cols]] = ohe_df[[each_cols]].fillna(value=im_val[each_cols], inplace=False)
+        ohe_df[[each_cols]] = ohe_df[[each_cols]].fillna(value=im_val, inplace=False)
 
     # scale columns to between 0 and 1
     df_range: pd.DataFrame = ohe_df.agg(func=["min", "max"])
