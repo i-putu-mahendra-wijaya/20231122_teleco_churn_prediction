@@ -80,7 +80,7 @@ in our case from 46 original dimension to smaller dimension.
 
 Naturally, the question to ask is what is the destination lower dimension then? 
 
-As a rule of thumb, we want to reduce the dimension to fourth root of the original: which means for us (46)^(0.25) ~ 3
+As a rule of thumb, we want to reduce the dimension to fourth-root of the original: which means for us (46)^(0.25) ~ 3
 
 
 ## Algorithm / implementation section, Model Training, and Performance Measurement
@@ -240,6 +240,50 @@ Some interesting points to note from this `SHAP` value:
 2. There are only two numerical variables appear in this Top 20: 
    * `MonthlyCharges`, appearing in No.10. The SHAP value indicates that customer with high `MonthlyCharges` have more tendency to churn
    * `tenure`, appearing in No.20. The SHAP value indicates that customer with young `tenure`  is less likely to churn
+
+If we remember from `part00_data_exploration.ipynb`, all the top five categorical variables are the predominant
+class in respective categories
+
+Tech Support distribution 
+![tech support distribution](notebooks/figures/tech_support_distribution.png)
+
+Online Security distribution
+![online security distribution](notebooks/figures/online_security_distribution.png)
+
+Contract Distribution
+![contract distribution](notebooks/figures/contract_distribution.png)
+
+Internet Service Distribution
+![internet service distribution](notebooks/figures/internet_service_distribution.png)
+
+Online Backup distribution
+![online backup distribution](notebooks/figures/online_backup_distribution.png)
+
+Hence, in the bias check section, we will check the model accuracy prediction against customers that have these 
+characteristics vs those that don't
+
+The notebook where we explore the model bias can be found in `notebook` folder
+
+``` 
+notebooks/exploration/part05_model_bias.ipynb
+```
+
+In that notebook, we notice that the accuracy of the model for predicing churn for customers that have: 
+
+   * TechSupport_No
+   * OnlineSecurity_No
+   * Contract_Month-to-Month
+   * InternetService_Fiber optic
+   * OnlineBackup_No
+
+are 1.5x better than for customers that don't have these characteristics 
+
+```
+ base group accuracy score 0.7630853994490359
+----------------------------------------
+compared group accuracy score 0.5509641873278237
+
+```
 
 ## Pushing Models to Production
 
