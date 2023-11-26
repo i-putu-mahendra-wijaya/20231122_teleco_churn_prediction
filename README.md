@@ -368,7 +368,7 @@ If detected, then it means we have to re-train the model at best, or create a ne
 
 ## Business / Commercial Need for Alignment with Analytics Team Prior to Retention Marketing Campaign
 
-PowerPoint deck for alignment with Commercial / Marketing team can be found in 
+PowerPoint deck for alignment with Commercial / Marketing team can be found in the `references` folder of this Github repo
 
 ``` 
 references/Teleco Churn Prediction.pptx
