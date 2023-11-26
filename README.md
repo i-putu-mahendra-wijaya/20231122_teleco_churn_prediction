@@ -127,10 +127,12 @@ In `hyperparametr tuning` section, we start to tune the hyperparameters for `Gra
 
 The list of hyperparameters that were tested are as follows: 
 
-* n_estimators: [100, 200, 300] >>> number of boosting tree
-* learning_rate: [0.1, 0.2, 0.3] >>> learning rate
-* max_depth: [3, 5, 7] >>> maximum depth in each tree
-* min_samples_split: [2, 5, 10] >>> minimum number of samples required to split a node
+| Hyperparameter | Search Range | Remark |
+| --- | --- | --- |
+| n_estimators | [100, 200, 300] | number of boosting tree |
+| learning_rate | [0.1, 0.2, 0.3] | learning rate |
+| max_depth | [3, 5, 7] | maximum depth in each tree |
+| min_samples_split | [2, 5, 10] | minimum number of samples required to split a node |
 
 The notebook for finding the best parameters can be found in `notebook` folder
 
@@ -165,12 +167,19 @@ The model is over-fitting quite a bit
 
 ## Model Fairness / Bias
 
-The result from `SHAP` value calculation can be seen from `notebook/figures` folder
+The notebook where we explore the model bias can be found in `notebook` folder
+
+``` 
+notebooks/exploration/part05_model_bias.ipynb
+```
+
+Meanwhile, the result from `SHAP` value calculation can be seen from `notebook/figures` folder
 
 ``` 
 notebooks/figures/shap_value_explainer.png
 ```
 
+#### Shap Value Scores
 ![shap value](notebooks/figures/shap_value_explainer.png)
 
 The picture show Top 20 features that most influence the output of `GradientBoostingClassifier` and its
@@ -244,31 +253,25 @@ Some interesting points to note from this `SHAP` value:
 If we remember from `part00_data_exploration.ipynb`, all the top five categorical variables are the predominant
 class in respective categories
 
-Tech Support distribution 
+#### Tech Support distribution 
 ![tech support distribution](notebooks/figures/tech_support_distribution.png)
 
-Online Security distribution
+#### Online Security distribution
 ![online security distribution](notebooks/figures/online_security_distribution.png)
 
-Contract Distribution
+#### Contract Distribution
 ![contract distribution](notebooks/figures/contract_distribution.png)
 
-Internet Service Distribution
+#### Internet Service Distribution
 ![internet service distribution](notebooks/figures/internet_service_distribution.png)
 
-Online Backup distribution
+##### Online Backup distribution
 ![online backup distribution](notebooks/figures/online_backup_distribution.png)
 
 Hence, in the bias check section, we will check the model accuracy prediction against customers that have these 
 characteristics vs those that don't
 
-The notebook where we explore the model bias can be found in `notebook` folder
-
-``` 
-notebooks/exploration/part05_model_bias.ipynb
-```
-
-In that notebook, we notice that the accuracy of the model for predicing churn for customers that have: 
+In the `./notebook/exploration/part05_model_bias.ipynb`, we notice that the accuracy of the model for predicting churn for customers that have: 
 
    * TechSupport_No
    * OnlineSecurity_No
@@ -285,12 +288,88 @@ compared group accuracy score 0.5509641873278237
 
 ```
 
+This bias is a result from unbalanced raw data we use for training. 
+
+If we have more time (and resources), there are several things we can do to reduce this bias: 
+
+1. **Collect More Data** | If we can collect more data, we may be able to reduce unbalanced distribution
+2. **Fine Tune Data Collection Methodology** | In addition to quantity of data, we also need to be mindful about how these data are collected. Bad data collection strategy can lead to the observed unbalanced distribution
+3. **Apply Bagging** | Bagging is a technique in Machine Learing where we create several models each trained using different subset of the data. The final prediction then is made by averaging all the predictions from these models
+4. **Reduce Learning Rate** | Reducing learning rate means that each tree in `GradientBoostingClassifier` have smaller effect on other tree. This can reduce over fitting, and correspondingly may reduce the effect of unbalanced training data as well
+
 ## Pushing Models to Production
 
-### Key Stages & Processes
+### Key Stages & Processes, and What Tools to Leverage
 
-### What Tools to Leverage
+I am assuming in this question that we already have a trained model to deploy. 
+
+Furthermore, I am assuming that "deployment" means "Restful API". This is may not always be the case. 
+
+In my experience, there are two common ways to deploy a model:
+* Building Restful API
+* Run inference task with the model periodically using `chron tab`, and then save the prediction to a Data Warehouse (DWH)
+  * Typical DWH used are `Amazon Redshift` from Amazon Web Service (AWS), or
+  * `Google BigQuery` (GBQ) from Google Cloud Platform (GCP)
+
+> **Note** If more advanced orchestration is needed, we can replace `chron tab` with `Apache Airflow`. 
+
+Once we have a trained model, then the typical steps to deploy the model to Restful API will be: 
+
+1. Serialize the model into bytestream 
+   * Scikit-Learn model typically saved as pickle file `.pkl`
+   * PyTorch model typically saved as `PyTorch State Dictionary` file `.pth`
+
+2. Store the serialized model 
+   * In local folder during development stage
+   * In Cloud Storage if you want to share the model with the team.
+     * Some cloud storage solution often used are:
+       *  `Amazon S3` from AWS, and 
+       *  `Google Clouds Storage` (GCS) from GCP
+
+3. Create a new Python module to load and deserialize the model back
+   * In scikit-learn, this can be as simple as `the_model: Model = joblib.load("/path/to/your/model.pkl"")`
+   * In PyTorch, this often you need to do a two-step
+   ```
+   state_dict: Dict = torch.load(f="path/to/your/model.pth", map_location=torch.device("cpu"))
+   my_model: nn.Model = MyModel()
+   my_model.load_state_dict(state_dict=state_dict)
+   ```
+4. Create another Python script to serve the model as `Restful API`.
+
+   > I normally use `flask` and `flask-restx` for building the API endpoints. Furthermore, I would typically use `marshmallow` to validate the request before processing them with the model. 
+   > Depending on the complexity of the requirement, I sometimes also collaborate with Back-End (BE) engineers to setup
+   > `RabbitMQ` messaging queues to allow async request-response between the model and the back-end service
+
+5. Prepare a `Dockerfile` to allow us to containerize the model with `Docker`
+6. Test the required resources to run the ML App with expected traffic (both under normal condition and under high-traffic condition) using `Locust`
+    > The result from load test can give us idea about 
+    > * What are the required resources to run the model under typical load
+    > * The expected processing time between request and response
+
+7. At this point, I would typically collaborate with the infra team to deploy the model for production
+   
+    > Some of the tools to leverage at this step usually are `Github Action` to automatically trigger a build-job 
+    > when a new push is detected at certain Github branch.
+    > If using `Docker`, the infra team usually can deploy the dockerized ML Application to `Kubernetes` cluster.
+    > The observability of the ML App usually are monitored using `Grafana`, while the logs
+    > emitted from the App are recorded in `DataDog`
+   
 
 ### What to Monitor Whilst In Production
 
+Once in production, the metrics to monitor are very similar between ML App and ordinary App. 
+
+Namely, we typically need to monitor: 
+* Resource usage (CPU, Memory, Storage), and
+* Errors
+
+In the case of ML App, however, we also need to periodically check the model metrics (e.g., `accuracy_score`, `f1_score`, etc) to detect any drifting. 
+If detected, then it means we have to re-train the model at best, or create a new model at wost.
+
 ## Business / Commercial Need for Alignment with Analytics Team Prior to Retention Marketing Campaign
+
+PowerPoint deck for alignment with Commercial / Marketing team can be found in 
+
+``` 
+references/Teleco Churn Prediction.pptx
+```
